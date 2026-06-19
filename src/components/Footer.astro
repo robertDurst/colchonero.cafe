@@ -1,0 +1,9 @@
+---
+import { buildVersion } from "@/lib/version";
+const v = buildVersion();
+---
+<footer>
+  colchonero.cafe · Web no oficial hecha por fanáticos{v && (
+    <span class="ver"> · {v.date && <>{v.date} · </>}<code>{v.sha}</code></span>
+  )}
+</footer>

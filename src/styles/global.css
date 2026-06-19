@@ -81,6 +81,8 @@ body.home footer{margin-top:2rem}
   white-space:nowrap; min-width:52px; text-align:right;
 }
 footer{text-align:center; padding:28px 20px 48px; font-size:.82rem; opacity:.6}
+.ver{opacity:.75; font-variant-numeric:tabular-nums; white-space:nowrap}
+.ver code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.95em}
 
 /* ---------- Post page ---------- */
 body.post{background-image:none; background:var(--crema)}

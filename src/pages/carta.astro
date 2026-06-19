@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Cup from "@/components/Cup.astro";
+import Footer from "@/components/Footer.astro";
 import { getCollection } from "astro:content";
 import { wordCount, classify, displayTitle, fmtDate } from "@/lib/coffee";
 
@@ -39,5 +40,5 @@ const updated = posts.length ? fmtDate(posts[0].date) : "";
       </a>
     ))}
   </main>
-  <footer>colchonero.cafe · Web no oficial hecha por fanáticos</footer>
+  <Footer />
 </Layout>
