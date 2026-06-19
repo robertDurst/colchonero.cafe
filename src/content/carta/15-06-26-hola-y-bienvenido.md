@@ -7,7 +7,7 @@ date: 2026-06-15
 
 ¿Por qué el Atleti? Buena pregunta. Soy del centro de Florida, así que mi equipo es el Orlando, y este verano Griezmann empezará una nueva etapa con el Orlando... así que me compré una camiseta del Atleti y, desde hoy, soy fanático.
 
-Todos los días pienso escribir un post sobre el fútbol y sobre el Atleti. Si me sale bien, mejorarán mi español y mi comprensión del fútbol.
+Casi todos los días pienso escribir un post sobre el fútbol y sobre el Atleti. Si me sale bien, mejorarán mi español y mi comprensión del fútbol.
 
 Mañana, la selección de Argentina jugará contra Argelia. Una buena oportunidad para aprender sobre el equipo... ¡tenemos muchos jugadores argentinos!
 
