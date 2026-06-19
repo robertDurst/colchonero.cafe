@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Tabs from "@/components/Tabs.astro";
 import Footer from "@/components/Footer.astro";
 
 // Links out to other Atleti sites. (label, url, note)
@@ -8,6 +9,11 @@ const RESOURCES = [
     label: "Atlético de Madrid",
     url: "https://www.atleticodemadrid.com",
     note: "Web oficial del club",
+  },
+  {
+    label: "r/atletico",
+    url: "https://www.reddit.com/r/atletico/",
+    note: "Subreddit oficial",
   },
 ];
 ---
@@ -20,9 +26,7 @@ const RESOURCES = [
     <a href="/"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
     <h1>Recursos</h1>
     <p class="sub">Otras webs rojiblancas.</p>
-    <nav class="tabs">
-      <a href="/carta">La Carta</a><a class="on" href="/recursos">Recursos</a>
-    </nav>
+    <Tabs active="recursos" />
   </header>
   <main class="menu">
     {RESOURCES.map((r) => (

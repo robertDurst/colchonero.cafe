@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Cup from "@/components/Cup.astro";
+import Tabs from "@/components/Tabs.astro";
 import Footer from "@/components/Footer.astro";
 import { getCollection } from "astro:content";
 import { wordCount, classify, displayTitle, fmtDate } from "@/lib/coffee";
@@ -26,9 +27,7 @@ const updated = posts.length ? fmtDate(posts[0].date) : "";
     <h1>La Carta</h1>
     <p class="sub">El tamaño del café = lo que tardas en leerlo.</p>
     <p class="updated">actualizado · {updated}</p>
-    <nav class="tabs">
-      <a class="on" href="/carta">La Carta</a><a href="/recursos">Recursos</a>
-    </nav>
+    <Tabs active="carta" />
   </header>
   <main class="menu">
     {posts.map((p) => (

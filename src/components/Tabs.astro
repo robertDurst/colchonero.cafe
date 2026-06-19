@@ -1,0 +1,17 @@
+---
+interface Props {
+  active: "carta" | "recursos" | "sobre_mi";
+}
+const { active } = Astro.props;
+
+const tabs = [
+  { id: "carta", href: "/carta", label: "La Carta" },
+  { id: "recursos", href: "/recursos", label: "Recursos" },
+  { id: "sobre_mi", href: "/sobre_mi", label: "Sobre mí" },
+] as const;
+---
+<nav class="tabs">
+  {tabs.map((t) => (
+    <a class={t.id === active ? "on" : undefined} href={t.href}>{t.label}</a>
+  ))}
+</nav>

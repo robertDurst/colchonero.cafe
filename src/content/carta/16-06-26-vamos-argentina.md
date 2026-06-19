@@ -16,15 +16,15 @@ Los rojiblancos del Atleti que jugaron:
 | Giuliano Simeone |   0 |      0 |     0 |     0 |      0 | 0.00 |
 | Juan Musso       |   0 |      0 |     0 |     0 |      0 | 0.00 |
 
-_Simeone y Musso se quedaron en el banquillo._ Obviamente Messi fue el jugador del partido, pero un buen mostrado de nuestros jugadores!
+_Simeone y Musso se quedaron en el banquillo._ Obviamente Messi fue el jugador del partido, pero ¡una buena actuación de nuestros jugadores!
 
-Con esta victoria, Argentina tiene una chanza buena de continuar al próximo round porque, según unos de los blogs de video que siguen, cuatro puntos es suficiente para seguir en el torneo. Y con esto ganando, solo necesitan un punto más en los dos siguientes partidos del su grupo.
+Con esta victoria, Argentina tiene una buena oportunidad de pasar a la próxima ronda porque, según algunos de los blogs de video que sigo, cuatro puntos son suficientes para seguir en el torneo. Y con este triunfo, solo necesitan un punto más en los dos siguientes partidos de su grupo.
 
-Proximos partidos:
+Próximos partidos:
 
-| Oponente | Fecha        | Ranking en el mundo (seguido a Fifa [aqui](https://inside.fifa.com/fifa-world-ranking/men)) |
-| -------- | ------------ | ------------------------------------------------------------------------------------------- |
-| Austria  | lunes 22/06  | 21                                                                                          |
-| Jordan   | sabado 27/06 | 68                                                                                          |
+| Oponente | Fecha        | Ranking en el mundo (según la FIFA [aquí](https://inside.fifa.com/fifa-world-ranking/men)) |
+| -------- | ------------ | ------------------------------------------------------------------------------------------ |
+| Austria  | lunes 22/06  | 21                                                                                         |
+| Jordania | sábado 27/06 | 68                                                                                         |
 
-No se que los sitios de gambling le dicen pero en mi opinión... es casi guaranteed!
+No sé qué dicen los sitios de apuestas, pero en mi opinión... ¡es casi seguro!
