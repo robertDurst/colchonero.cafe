@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Colchonero Café — rojiblanco coffee badge">
+  <defs>
+    <clipPath id="cupClip">
+      <path d="M132,172 L268,172 L252,268 Q250,280 238,280 L162,280 Q150,280 148,268 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- badge -->
+  <circle cx="200" cy="200" r="172" fill="#F3E9D8"/>
+  <circle cx="200" cy="200" r="158" fill="none" stroke="#0B1B3F" stroke-width="6"/>
+
+  <!-- steam -->
+  <g fill="none" stroke="#0B1B3F" stroke-width="5" stroke-linecap="round" opacity="0.75">
+    <path d="M180,150 C174,136 186,128 180,114"/>
+    <path d="M200,152 C194,138 206,130 200,116"/>
+    <path d="M220,150 C214,136 226,128 220,114"/>
+  </g>
+
+  <!-- handle -->
+  <path d="M268,192 q46,4 42,48 q-4,38 -44,32" fill="none" stroke="#0B1B3F" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- cup body: rojiblanco vertical stripes -->
+  <g clip-path="url(#cupClip)">
+    <rect x="130" y="168" width="140" height="116" fill="#FFFFFF"/>
+    <rect x="132" y="168" width="17" height="116" fill="#CE3524"/>
+    <rect x="166" y="168" width="17" height="116" fill="#CE3524"/>
+    <rect x="200" y="168" width="17" height="116" fill="#CE3524"/>
+    <rect x="234" y="168" width="17" height="116" fill="#CE3524"/>
+  </g>
+  <path d="M132,172 L268,172 L252,268 Q250,280 238,280 L162,280 Q150,280 148,268 Z"
+        fill="none" stroke="#0B1B3F" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- coffee surface -->
+  <ellipse cx="200" cy="172" rx="68" ry="15" fill="#3A2417" stroke="#0B1B3F" stroke-width="6"/>
+
+  <!-- saucer -->
+  <path d="M120,294 Q200,318 280,294" fill="none" stroke="#0B1B3F" stroke-width="8" stroke-linecap="round"/>
+</svg>

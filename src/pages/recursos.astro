@@ -1,0 +1,36 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+// Links out to other Atleti sites. (label, url, note)
+const RESOURCES = [
+  {
+    label: "Atlético de Madrid",
+    url: "https://www.atleticodemadrid.com",
+    note: "Web oficial del club",
+  },
+];
+---
+<Layout
+  title="Colchonero Café · Recursos"
+  description="Enlaces a otras webs del Atleti para fanáticos rojiblancos."
+  bodyClass="carta"
+>
+  <header class="carta-head">
+    <a href="/"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
+    <h1>Recursos</h1>
+    <p class="sub">Otras webs rojiblancas.</p>
+    <nav class="tabs">
+      <a href="/carta">La Carta</a><a class="on" href="/recursos">Recursos</a>
+    </nav>
+  </header>
+  <main class="menu">
+    {RESOURCES.map((r) => (
+      <a class="row" href={r.url} target="_blank" rel="noopener">
+        <span class="title">{r.label}</span>
+        <span class="drink">{r.note}</span>
+        <span class="price">↗</span>
+      </a>
+    ))}
+  </main>
+  <footer>colchonero.cafe · Web no oficial hecha por fanáticos</footer>
+</Layout>

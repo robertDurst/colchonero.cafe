@@ -1,0 +1,43 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Cup from "@/components/Cup.astro";
+import { getCollection } from "astro:content";
+import { wordCount, classify, displayTitle, fmtDate } from "@/lib/coffee";
+
+const posts = (await getCollection("carta"))
+  .map((entry) => ({
+    slug: entry.slug,
+    title: entry.data.title,
+    date: entry.data.date,
+    drink: classify(wordCount(entry.body)),
+  }))
+  .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+const updated = posts.length ? fmtDate(posts[0].date) : "";
+---
+<Layout
+  title="Colchonero Café · La Carta"
+  description="Blog rojiblanco para fanáticos del Atleti. Posts servidos por tamaño de café."
+  bodyClass="carta"
+>
+  <header class="carta-head">
+    <a href="/"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
+    <h1>La Carta</h1>
+    <p class="sub">El tamaño del café = lo que tardas en leerlo.</p>
+    <p class="updated">actualizado · {updated}</p>
+    <nav class="tabs">
+      <a class="on" href="/carta">La Carta</a><a href="/recursos">Recursos</a>
+    </nav>
+  </header>
+  <main class="menu">
+    {posts.map((p) => (
+      <a class="row" href={`/${p.slug}`}>
+        <Cup px={p.drink.cupPx} id={`cup-${p.slug}`} />
+        <span class="title">{displayTitle(p.title, p.date)}</span>
+        <span class="drink">{p.drink.label}</span>
+        <span class="price">{p.drink.read}</span>
+      </a>
+    ))}
+  </main>
+  <footer>colchonero.cafe · Web no oficial hecha por fanáticos</footer>
+</Layout>

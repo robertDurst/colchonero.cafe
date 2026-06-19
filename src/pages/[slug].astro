@@ -1,0 +1,53 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Cup from "@/components/Cup.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { wordCount, classify, displayTitle } from "@/lib/coffee";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("carta");
+  return posts.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props { entry: CollectionEntry<"carta">; }
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const { title, date } = entry.data;
+const drink = classify(wordCount(entry.body));
+const dt = displayTitle(title, date);
+---
+<Layout title={`${dt} · Colchonero Café`} description={title} bodyClass="post">
+  <div class="drainer" title="te lo vas bebiendo…">
+    <svg width="48" height="60" viewBox="0 0 48 60" aria-hidden="true">
+      <clipPath id="glass"><path d="M13,9 L35,9 L32,52 Q31,56 27,56 L21,56 Q17,56 16,52 Z"/></clipPath>
+      <rect id="coffee" x="11" y="9" width="26" height="47" fill="#6F4A2E" clip-path="url(#glass)"/>
+      <path d="M13,9 L35,9 L32,52 Q31,56 27,56 L21,56 Q17,56 16,52 Z" fill="none" stroke="#0B1B3F" stroke-width="2.6" stroke-linejoin="round"/>
+      <line x1="10" y1="9" x2="38" y2="9" stroke="#0B1B3F" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <article id="art">
+    <a class="back" href="/carta">← La Carta</a>
+    <p class="meta"><Cup px={30} id="cup-meta" /><span>{drink.label} · {drink.read}</span></p>
+    <h1>{dt}</h1>
+    <Content />
+    <a class="back foot" href="/carta">← Volver a La Carta</a>
+  </article>
+  <script is:inline>
+    const art = document.getElementById('art'), cof = document.getElementById('coffee');
+    const TOP = 9, H = 47;
+    function drain() {
+      const r = art.getBoundingClientRect();
+      const total = art.offsetHeight - window.innerHeight;
+      const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+      cof.setAttribute('y', (TOP + p * H).toFixed(1));
+      cof.setAttribute('height', ((1 - p) * H).toFixed(1));
+    }
+    addEventListener('scroll', drain, { passive: true });
+    addEventListener('resize', drain);
+    drain();
+  </script>
+</Layout>

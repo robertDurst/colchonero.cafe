@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Colchonero Café favicon">
+  <circle cx="200" cy="200" r="172" fill="#F3E9D8"/>
+  <circle cx="200" cy="200" r="158" fill="none" stroke="#0B1B3F" stroke-width="10"/>
+
+  <!-- steam -->
+  <g fill="none" stroke="#0B1B3F" stroke-width="8" stroke-linecap="round" opacity="0.8">
+    <path d="M185,148 C179,134 191,126 185,112"/>
+    <path d="M215,148 C209,134 221,126 215,112"/>
+  </g>
+
+  <!-- cup with rojiblanco stripes -->
+  <clipPath id="c"><path d="M130,170 L270,170 L252,272 Q250,284 238,284 L162,284 Q150,284 148,272 Z"/></clipPath>
+  <g clip-path="url(#c)">
+    <rect x="128" y="166" width="144" height="122" fill="#FFFFFF"/>
+    <rect x="130" y="166" width="23" height="122" fill="#CE3524"/>
+    <rect x="176" y="166" width="23" height="122" fill="#CE3524"/>
+    <rect x="222" y="166" width="23" height="122" fill="#CE3524"/>
+  </g>
+  <path d="M130,170 L270,170 L252,272 Q250,284 238,284 L162,284 Q150,284 148,272 Z"
+        fill="none" stroke="#0B1B3F" stroke-width="9" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="170" rx="70" ry="15" fill="#3A2417" stroke="#0B1B3F" stroke-width="9"/>
+</svg>
