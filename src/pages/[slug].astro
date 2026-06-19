@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Cup from "@/components/Cup.astro";
+import Footer from "@/components/Footer.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { wordCount, classify, displayTitle } from "@/lib/coffee";
 
@@ -36,6 +37,7 @@ const dt = displayTitle(title, date);
     <Content />
     <a class="back foot" href="/carta">← Volver a La Carta</a>
   </article>
+  <Footer />
   <script is:inline>
     const art = document.getElementById('art'), cof = document.getElementById('coffee');
     const TOP = 9, H = 47;
