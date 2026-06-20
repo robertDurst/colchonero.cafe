@@ -1,0 +1,487 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Tabs from "@/components/Tabs.astro";
+import Footer from "@/components/Footer.astro";
+import {
+  parseEvents,
+  buildMonths,
+  typeKey,
+  fmtEventDate,
+  WEEKDAYS,
+} from "@/lib/calendar";
+// Vite serves the CSV as a raw string at build time.
+import csv from "@/data/calendario.csv?raw";
+
+const events = parseEvents(csv);
+const months = buildMonths(events);
+
+// Build-time "today" for the highlight.
+const today = new Date().toISOString().slice(0, 10);
+
+// Single-month view: pick the month containing today, else the next upcoming
+// one, else the last. Navigation between months happens client-side.
+const monthKey = (m: (typeof months)[number]) =>
+  `${m.year}-${String(m.month).padStart(2, "0")}`;
+const todayMonth = today.slice(0, 7);
+let startIndex = months.findIndex((m) => monthKey(m) === todayMonth);
+if (startIndex === -1) startIndex = months.findIndex((m) => monthKey(m) > todayMonth);
+if (startIndex === -1) startIndex = months.length - 1;
+
+// Legend / colour key for the event types actually present.
+const KNOWN = [
+  { key: "liga", label: "Liga" },
+  { key: "champions", label: "Champions" },
+  { key: "mundial", label: "Mundial" },
+  { key: "copa", label: "Copa" },
+  { key: "amistoso", label: "Amistoso" },
+  { key: "otro", label: "Otro" },
+];
+const presentKeys = new Set(events.map((e) => typeKey(e.type)));
+const legend = KNOWN.filter((k) => presentKeys.has(k.key));
+---
+<Layout
+  title="Colchonero Café · Calendario"
+  description="Calendario rojiblanco: partidos y eventos del Atleti."
+  bodyClass="carta"
+>
+  <header class="carta-head">
+    <a href="/"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
+    <h1>Calendario</h1>
+    <p class="sub">Partidos y eventos rojiblancos, servidos por fecha.</p>
+    <Tabs active="calendario" />
+  </header>
+
+  <main class="cal" data-today={today}>
+    {legend.length > 0 && (
+      <ul class="legend" aria-label="Tipos de evento">
+        {legend.map((l) => (
+          <li><span class={`dot ${l.key}`} aria-hidden="true"></span>{l.label}</li>
+        ))}
+      </ul>
+    )}
+
+    {months.length === 0 ? (
+      <p class="empty">
+        Sin eventos programados todavía. Añádelos en
+        <code>src/data/calendario.csv</code>.
+      </p>
+    ) : (
+      <>
+      <div class="cal-nav">
+        <button class="navbtn prev" type="button" aria-label="Mes anterior" disabled={startIndex === 0}>←</button>
+        <h2 class="month-label">{months[startIndex].label}</h2>
+        <button class="navbtn next" type="button" aria-label="Mes siguiente" disabled={startIndex === months.length - 1}>→</button>
+      </div>
+      {months.map((m, i) => (
+        <section class="month" data-label={m.label} hidden={i !== startIndex}>
+          <div class="grid" aria-label={m.label}>
+            <div class="weekdays">
+              {WEEKDAYS.map((d) => (
+                <span>{d}</span>
+              ))}
+            </div>
+            <div class="days">
+              {m.weeks.flat().map((cell) => (
+                <div
+                  class:list={[
+                    "cell",
+                    { empty: cell.day === null },
+                    { has: cell.events.length > 0 },
+                    { today: cell.iso === today },
+                  ]}
+                  data-date={cell.events.length > 0 ? cell.iso : undefined}
+                  tabindex={cell.events.length > 0 ? 0 : undefined}
+                  title={cell.events.length > 0 ? "Ver detalle" : undefined}
+                >
+                  {cell.day !== null && (
+                    <>
+                      <span class="n">{cell.day}</span>
+                      {cell.events.length > 0 && (
+                        <span class="dots">
+                          {cell.events.map((ev) => (
+                            <span class={`dot ${typeKey(ev.type)}`} title={ev.title || ev.type}></span>
+                          ))}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {m.events.length === 0 ? (
+            <p class="noev">Sin eventos previstos este mes.</p>
+          ) : (
+          <ul class="agenda">
+            {m.events.map((ev) => (
+              <li class="ev" data-date={ev.date}>
+                <span class={`rail ${typeKey(ev.type)}`} aria-hidden="true"></span>
+                <span class="when">
+                  <span class="d">{fmtEventDate(ev.date)}</span>
+                  {ev.time && <span class="t">{ev.time}</span>}
+                </span>
+                <span class="what">
+                  <span class="title">{ev.title || ev.type || "Evento"}</span>
+                  {(ev.location || ev.type) && (
+                    <span class="sub2">
+                      {ev.location}{ev.location && ev.type ? " · " : ""}{ev.type}
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+          )}
+        </section>
+      ))}
+      </>
+    )}
+  </main>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll<HTMLElement>(".month"));
+    const label = document.querySelector<HTMLElement>(".month-label");
+    const prev = document.querySelector<HTMLButtonElement>(".navbtn.prev");
+    const next = document.querySelector<HTMLButtonElement>(".navbtn.next");
+    const today = document.querySelector<HTMLElement>(".cal")?.dataset.today ?? "";
+
+    // Show only the chosen day's detail in each month; default to today if it
+    // has events, otherwise the month's first event day.
+    const selectDate = (section: HTMLElement, date: string) => {
+      const agenda = section.querySelector<HTMLElement>(".agenda");
+      if (!agenda) return;
+      agenda.classList.add("filtered");
+      section.querySelectorAll<HTMLElement>(".ev").forEach((ev) =>
+        ev.classList.toggle("sel", ev.dataset.date === date),
+      );
+      section.querySelectorAll<HTMLElement>(".cell").forEach((cell) =>
+        cell.classList.toggle("selected", !!date && cell.dataset.date === date),
+      );
+    };
+    const defaultDate = (section: HTMLElement) => {
+      const dates = Array.from(section.querySelectorAll<HTMLElement>(".ev"))
+        .map((ev) => ev.dataset.date ?? "")
+        .sort();
+      return dates.includes(today) ? today : (dates[0] ?? "");
+    };
+
+    // Month navigation (prev/next).
+    if (sections.length && label && prev && next) {
+      let i = Math.max(0, sections.findIndex((s) => !s.hidden));
+      const show = (n: number) => {
+        i = Math.max(0, Math.min(sections.length - 1, n));
+        sections.forEach((s, k) => (s.hidden = k !== i));
+        label.textContent = sections[i].dataset.label ?? "";
+        prev.disabled = i === 0;
+        next.disabled = i === sections.length - 1;
+      };
+      prev.addEventListener("click", () => show(i - 1));
+      next.addEventListener("click", () => show(i + 1));
+      show(i);
+    }
+
+    // Day selection within every month.
+    sections.forEach((section) => {
+      selectDate(section, defaultDate(section));
+      section.querySelectorAll<HTMLElement>(".cell.has").forEach((cell) => {
+        const pick = () => selectDate(section, cell.dataset.date ?? "");
+        cell.addEventListener("click", pick);
+        cell.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            pick();
+          }
+        });
+      });
+    });
+  </script>
+
+  <Footer />
+</Layout>
+
+<style>
+  .cal {
+    max-width: 680px;
+    margin: 24px auto 8px;
+    padding: 0 20px;
+  }
+
+  /* ── "Future only" notice ── */
+  .notice {
+    max-width: 52ch;
+    margin: 0 auto 22px;
+    padding: 12px 16px;
+    border-left: 5px solid var(--rojo);
+    background: rgba(206, 53, 36, 0.07);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--tinta);
+  }
+  .notice strong {
+    color: var(--rojo);
+  }
+
+  /* ── Legend ── */
+  .legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    justify-content: center;
+    margin: 0 0 24px;
+    padding: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--tinta);
+  }
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* ── Type colour dots ── */
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--tinta);
+    flex: 0 0 auto;
+  }
+  .dot.liga { background: var(--rojo); }
+  .dot.champions { background: var(--navy); }
+  .dot.mundial { background: #0e8388; }
+  .dot.copa { background: #d4a017; }
+  .dot.amistoso { background: #2e7d4f; }
+  .dot.otro { background: #7a6a55; }
+
+  .empty {
+    text-align: center;
+    color: var(--tinta);
+    margin: 40px auto;
+    max-width: 40ch;
+    line-height: 1.6;
+  }
+  .empty code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    background: rgba(11, 27, 63, 0.07);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ── Month navigation ── */
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 0 0 18px;
+  }
+  .cal-nav .month-label {
+    margin: 0;
+    min-width: 9.5em;
+    text-align: center;
+    text-transform: capitalize;
+    letter-spacing: 0.04em;
+    font-size: 1.5rem;
+    color: var(--navy);
+  }
+  .navbtn {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    border: 2px solid var(--navy);
+    background: transparent;
+    color: var(--navy);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, opacity 0.15s;
+  }
+  .navbtn:hover:not(:disabled) {
+    background: var(--navy);
+    color: var(--crema);
+  }
+  .navbtn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* ── Month ── */
+  .month {
+    margin: 0 0 40px;
+  }
+
+  /* ── Grid ── */
+  .grid {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(11, 27, 63, 0.1);
+  }
+  .weekdays,
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  /* Fixed, equal row heights — keeps padding-cell rows the same as day rows. */
+  .days {
+    grid-auto-rows: 46px;
+    align-content: start;
+  }
+  .weekdays {
+    background: var(--navy);
+  }
+  .weekdays span {
+    text-align: center;
+    padding: 8px 0;
+    color: var(--crema);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+  .cell {
+    position: relative;
+    padding: 5px 6px;
+    border-top: 1px solid rgba(11, 27, 63, 0.08);
+    border-left: 1px solid rgba(11, 27, 63, 0.08);
+  }
+  .cell:nth-child(7n + 1) { border-left: none; }
+  /* Padding cells (days outside this month) stay blank so they recede. */
+  .cell.empty {
+    background: transparent;
+    border-color: transparent;
+  }
+  .cell .n {
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--tinta);
+  }
+  .cell.has {
+    cursor: pointer;
+  }
+  .cell.has:hover {
+    background: rgba(206, 53, 36, 0.06);
+  }
+  .cell.has:focus-visible {
+    outline: 2px solid var(--rojo);
+    outline-offset: -2px;
+  }
+  .cell.has .n {
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .cell.selected {
+    background: rgba(11, 27, 63, 0.1);
+    box-shadow: inset 0 0 0 2px var(--navy);
+  }
+  .cell.today {
+    background: rgba(206, 53, 36, 0.08);
+  }
+  .cell.today .n {
+    background: var(--rojo);
+    color: #fff;
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cell .dots {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+
+  /* ── Selected-day detail under the grid ── */
+  .agenda {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+  }
+  .ev {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    padding: 10px 4px;
+    border-bottom: 1px dashed rgba(11, 27, 63, 0.22);
+  }
+  .ev:last-child { border-bottom: none; }
+
+  /* Once JS is active, only the selected day's events are shown. */
+  .agenda.filtered .ev { display: none; }
+  .agenda.filtered .ev.sel { display: flex; }
+  .agenda.filtered .ev.sel { border-bottom: none; }
+
+  .noev {
+    text-align: center;
+    color: var(--tinta);
+    opacity: 0.7;
+    margin: 18px 0 0;
+    font-size: 0.95rem;
+  }
+  .ev .rail {
+    width: 4px;
+    border-radius: 4px;
+    background: var(--tinta);
+    flex: 0 0 auto;
+  }
+  .ev .rail.liga { background: var(--rojo); }
+  .ev .rail.champions { background: var(--navy); }
+  .ev .rail.mundial { background: #0e8388; }
+  .ev .rail.copa { background: #d4a017; }
+  .ev .rail.amistoso { background: #2e7d4f; }
+  .ev .rail.otro { background: #7a6a55; }
+  .ev .when {
+    flex: 0 0 6.5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .ev .when .d {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: capitalize;
+    color: var(--navy);
+  }
+  .ev .when .t {
+    font-size: 0.78rem;
+    color: var(--tinta);
+    font-variant-numeric: tabular-nums;
+  }
+  .ev .what {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  .ev .what .title {
+    font-weight: 700;
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+  .ev .what .sub2 {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.65;
+  }
+
+  @media (max-width: 560px) {
+    .days { grid-auto-rows: 40px; }
+    .cell .n { font-size: 0.78rem; }
+  }
+</style>

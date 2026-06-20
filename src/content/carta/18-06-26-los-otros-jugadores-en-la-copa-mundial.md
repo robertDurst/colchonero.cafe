@@ -3,7 +3,7 @@ title: "Los Otros Jugadores"
 date: 2026-06-18
 ---
 
-Perdón, es un poco obvio que intenté argumentar que "yo puedo ser un fanático de Argentina sin ser un Bandwagoner". Son otros jugadores del Atleti en la Copa Mundial. Sin un orden en particular, mira la tabla de abajo.
+Perdón, es un poco obvio que intenté argumentar que "yo puedo ser un fanático de Argentina sin ser un bandwagoner". Hay otros jugadores del Atleti en la Copa Mundial. Sin un orden en particular, mira la tabla de abajo.
 
 | Jugador            | País    | Posición       |
 | ------------------ | ------- | -------------- |
@@ -11,7 +11,7 @@ Perdón, es un poco obvio que intenté argumentar que "yo puedo ser un fanático
 | Marc Pubill        | España  | Defensa        |
 | Álex Baena         | España  | Centrocampista |
 | José María Giménez | Uruguay | Defensa        |
-| Alexander Sorloth  | Noruega | Delantero      |
+| Alexander Sørloth  | Noruega | Delantero      |
 | Obed Vargas        | México  | Centrocampista |
 
 Fuentes:
@@ -21,9 +21,9 @@ Fuentes:
 
 El último sitio es el mejor porque está actualizado con los resultados de todos los partidos con nuestros jugadores.
 
-Hoy hay solo un partido con nuestros jugadores: la República de Corea contra México. Miré la segunda mitad del partido. ¡Qué partido tan increíble! Y no solo porque México ganó, sino porque Vargas jugó. [Según ESPN](https://www.espn.com/soccer/player-stats/_/gameId/760441), Vargas tuvo 15 toques, un xG de 0.02 (más de 0) y un remate a puerta. Vargas entró como suplente en los dos partidos casi en el mismo minuto, alrededor del minuto 70.
+Hoy hay solo un partido con nuestros jugadores: Corea del Sur contra México. Vi la segunda mitad del partido. ¡Qué partido tan increíble! Y no solo porque México ganó, sino porque Vargas jugó. [Según ESPN](https://www.espn.com/soccer/player-stats/_/gameId/760441), Vargas tuvo 15 toques, un xG de 0.02 (más de 0) y un remate a puerta. Vargas entró como suplente en los dos partidos casi en el mismo minuto, alrededor del minuto 70.
 
-Creo que Vargas está celebrando hoy, y ¡es espectacular que vayan a ver un partido de eliminación con México como cabeza de serie en el Azteca! Es contra el tercer clasificado del grupo C, E, F, H o I, y hoy no es posible decir qué equipo será su oponente. Vamos a ver, pero hoy ¡celebramos con Vargas!
+Creo que Vargas está celebrando hoy, y ¡es espectacular que vayan a jugar un partido de eliminación directa con México como cabeza de serie en el Azteca! Es contra el tercer clasificado del grupo C, E, F, H o I, y hoy no es posible decir qué equipo será su oponente. Vamos a ver, pero hoy ¡celebramos con Vargas!
 
 ### Mañana y el fin de semana
 

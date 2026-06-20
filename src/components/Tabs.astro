@@ -1,11 +1,12 @@
 ---
 interface Props {
-  active: "carta" | "recursos" | "sobre_mi";
+  active: "carta" | "calendario" | "recursos" | "sobre_mi";
 }
 const { active } = Astro.props;
 
 const tabs = [
   { id: "carta", href: "/carta", label: "La Carta" },
+  { id: "calendario", href: "/calendario", label: "Calendario" },
   { id: "recursos", href: "/recursos", label: "Recursos" },
   { id: "sobre_mi", href: "/sobre_mi", label: "Sobre mí" },
 ] as const;
