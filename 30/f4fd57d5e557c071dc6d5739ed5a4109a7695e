@@ -1,0 +1,27 @@
+src/styles/global.css
+  s_9f2dd4cff1e7b2::t_a3f1e730c8ecc8 38-41
+src/pages/recursos.astro
+  s_9f2dd4cff1e7b2::t_ea5ce5a3dbb87f 15,17-32,39
+  s_9f2dd4cff1e7b2::t_a7127a3500215c 16,40-43
+  s_9f2dd4cff1e7b2::t_01949d1240b13f 62
+  s_9f2dd4cff1e7b2::t_180f900c575955 5,7-8,14,38,44
+src/components/ResourceIcon.astro
+  s_9f2dd4cff1e7b2::t_f73c63d070ee7a 1,5-8,10-20,26-29,33-35,40-42,46-48
+  s_9f2dd4cff1e7b2::t_d80665c3718b6d 2-4,9,21-25,30-32,36-39,43-45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "30f4fd57d5e557c071dc6d5739ed5a4109a7695e",
+  "prompts": {},
+  "sessions": {
+    "s_9f2dd4cff1e7b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "98e262b6-7207-4880-8a82-b4c204ee13d9",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "robertDurst <me@robdurst.com>"
+    }
+  }
+}
