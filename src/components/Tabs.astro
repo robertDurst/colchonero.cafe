@@ -11,8 +11,20 @@ const tabs = [
   { id: "sobre_mi", href: "/sobre_mi", label: "Sobre mí" },
 ] as const;
 ---
-<nav class="tabs">
+<nav class="tabs" transition:persist="tabs">
   {tabs.map((t) => (
     <a class={t.id === active ? "on" : undefined} href={t.href}>{t.label}</a>
   ))}
 </nav>
+
+<script>
+  // The nav is persisted across view transitions, so its server-rendered
+  // active state goes stale. Recompute it from the URL after each swap.
+  const setActive = () => {
+    const path = location.pathname.replace(/\/+$/, "") || "/";
+    document.querySelectorAll<HTMLAnchorElement>(".tabs a").forEach((a) => {
+      a.classList.toggle("on", a.getAttribute("href") === path);
+    });
+  };
+  document.addEventListener("astro:after-swap", setActive);
+</script>

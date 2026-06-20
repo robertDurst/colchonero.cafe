@@ -45,7 +45,7 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
   bodyClass="carta"
 >
   <header class="carta-head">
-    <a href="/"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
+    <a href="/" transition:persist="brand"><img class="brand" src="/logo.svg" alt="Colchonero Café — inicio" /></a>
     <h1>Calendario</h1>
     <p class="sub">Partidos y eventos rojiblancos, servidos por fecha.</p>
     <Tabs active="calendario" />
@@ -140,6 +140,8 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
   </main>
 
   <script>
+    // Re-run on every view-transition navigation, not just the first load.
+    document.addEventListener("astro:page-load", () => {
     const sections = Array.from(document.querySelectorAll<HTMLElement>(".month"));
     const label = document.querySelector<HTMLElement>(".month-label");
     const prev = document.querySelector<HTMLButtonElement>(".navbtn.prev");
@@ -194,6 +196,7 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
           }
         });
       });
+    });
     });
   </script>
 

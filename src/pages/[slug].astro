@@ -39,17 +39,24 @@ const dt = displayTitle(title, date);
   </article>
   <Footer />
   <script is:inline>
-    const art = document.getElementById('art'), cof = document.getElementById('coffee');
-    const TOP = 9, H = 47;
-    function drain() {
-      const r = art.getBoundingClientRect();
-      const total = art.offsetHeight - window.innerHeight;
-      const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
-      cof.setAttribute('y', (TOP + p * H).toFixed(1));
-      cof.setAttribute('height', ((1 - p) * H).toFixed(1));
-    }
-    addEventListener('scroll', drain, { passive: true });
-    addEventListener('resize', drain);
-    drain();
+    // Bind the global listeners once; look up elements fresh each call so this
+    // keeps working across view-transition navigations.
+    (function () {
+      if (window.__drainBound) return;
+      window.__drainBound = true;
+      const TOP = 9, H = 47;
+      function drain() {
+        const art = document.getElementById('art'), cof = document.getElementById('coffee');
+        if (!art || !cof) return;
+        const r = art.getBoundingClientRect();
+        const total = art.offsetHeight - window.innerHeight;
+        const p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+        cof.setAttribute('y', (TOP + p * H).toFixed(1));
+        cof.setAttribute('height', ((1 - p) * H).toFixed(1));
+      }
+      addEventListener('scroll', drain, { passive: true });
+      addEventListener('resize', drain);
+      document.addEventListener('astro:page-load', drain);
+    })();
   </script>
 </Layout>
