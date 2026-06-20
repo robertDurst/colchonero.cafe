@@ -44,3 +44,5 @@ En esta fase desarrollaremos un algoritmo de predicción en tiempo real para los
 ---
 
 No tengo muchos detalles concretos ni voy a escoger fechas específicas (porque no es mi trabajo), pero creo que tener una dirección para este sitio es importante para mí y para mis aficionados.
+
+Si quieres seguir, [el codigo vivir en GitHub](https://github.com/robertDurst/libero).
