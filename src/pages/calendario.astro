@@ -1,43 +1,9 @@
 ---
+// The schedule is fetched live from the libero API in the browser (see the
+// client script below and src/lib/events.ts); nothing is baked at build time.
 import Layout from "@/layouts/Layout.astro";
 import Tabs from "@/components/Tabs.astro";
 import Footer from "@/components/Footer.astro";
-import {
-  parseEvents,
-  buildMonths,
-  typeKey,
-  fmtEventDate,
-  WEEKDAYS,
-} from "@/lib/calendar";
-// Vite serves the CSV as a raw string at build time.
-import csv from "@/data/calendario.csv?raw";
-
-const events = parseEvents(csv);
-const months = buildMonths(events);
-
-// Build-time "today" for the highlight.
-const today = new Date().toISOString().slice(0, 10);
-
-// Single-month view: pick the month containing today, else the next upcoming
-// one, else the last. Navigation between months happens client-side.
-const monthKey = (m: (typeof months)[number]) =>
-  `${m.year}-${String(m.month).padStart(2, "0")}`;
-const todayMonth = today.slice(0, 7);
-let startIndex = months.findIndex((m) => monthKey(m) === todayMonth);
-if (startIndex === -1) startIndex = months.findIndex((m) => monthKey(m) > todayMonth);
-if (startIndex === -1) startIndex = months.length - 1;
-
-// Legend / colour key for the event types actually present.
-const KNOWN = [
-  { key: "liga", label: "Liga" },
-  { key: "champions", label: "Champions" },
-  { key: "mundial", label: "Mundial" },
-  { key: "copa", label: "Copa" },
-  { key: "amistoso", label: "Amistoso" },
-  { key: "otro", label: "Otro" },
-];
-const presentKeys = new Set(events.map((e) => typeKey(e.type)));
-const legend = KNOWN.filter((k) => presentKeys.has(k.key));
 ---
 <Layout
   title="Colchonero Café · Calendario"
@@ -51,106 +17,159 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
     <Tabs active="calendario" />
   </header>
 
-  <main class="cal" data-today={today}>
-    {legend.length > 0 && (
-      <ul class="legend" aria-label="Tipos de evento">
-        {legend.map((l) => (
-          <li><span class={`dot ${l.key}`} aria-hidden="true"></span>{l.label}</li>
-        ))}
-      </ul>
-    )}
+  <main class="cal" data-state="loading">
+    <ul class="legend" aria-label="Tipos de evento"></ul>
 
-    {months.length === 0 ? (
-      <p class="empty">
-        Sin eventos programados todavía. Añádelos en
-        <code>src/data/calendario.csv</code>.
-      </p>
-    ) : (
-      <>
-      <div class="cal-nav">
-        <button class="navbtn prev" type="button" aria-label="Mes anterior" disabled={startIndex === 0}>←</button>
-        <h2 class="month-label">{months[startIndex].label}</h2>
-        <button class="navbtn next" type="button" aria-label="Mes siguiente" disabled={startIndex === months.length - 1}>→</button>
-      </div>
-      {months.map((m, i) => (
-        <section class="month" data-label={m.label} hidden={i !== startIndex}>
-          <div class="grid" aria-label={m.label}>
-            <div class="weekdays">
-              {WEEKDAYS.map((d) => (
-                <span>{d}</span>
-              ))}
-            </div>
-            <div class="days">
-              {m.weeks.flat().map((cell) => (
-                <div
-                  class:list={[
-                    "cell",
-                    { empty: cell.day === null },
-                    { has: cell.events.length > 0 },
-                    { today: cell.iso === today },
-                  ]}
-                  data-date={cell.events.length > 0 ? cell.iso : undefined}
-                  tabindex={cell.events.length > 0 ? 0 : undefined}
-                  title={cell.events.length > 0 ? "Ver detalle" : undefined}
-                >
-                  {cell.day !== null && (
-                    <>
-                      <span class="n">{cell.day}</span>
-                      {cell.events.length > 0 && (
-                        <span class="dots">
-                          {cell.events.map((ev) => (
-                            <span class={`dot ${typeKey(ev.type)}`} title={ev.title || ev.type}></span>
-                          ))}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+    <p class="status loading">Cargando calendario…</p>
+    <p class="status error">
+      No se pudo cargar el calendario.
+      <button type="button" class="retry">Reintentar</button>
+    </p>
+    <p class="status empty">Sin eventos programados todavía.</p>
 
-          {m.events.length === 0 ? (
-            <p class="noev">Sin eventos previstos este mes.</p>
-          ) : (
-          <ul class="agenda">
-            {m.events.map((ev) => (
-              <li class="ev" data-date={ev.date}>
-                <span class={`rail ${typeKey(ev.type)}`} aria-hidden="true"></span>
-                <span class="when">
-                  <span class="d">{fmtEventDate(ev.date)}</span>
-                  {ev.time && <span class="t">{ev.time}</span>}
-                </span>
-                <span class="what">
-                  <span class="title">{ev.title || ev.type || "Evento"}</span>
-                  {(ev.location || ev.type) && (
-                    <span class="sub2">
-                      {ev.location}{ev.location && ev.type ? " · " : ""}{ev.type}
-                    </span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-          )}
-        </section>
-      ))}
-      </>
-    )}
+    <div class="cal-nav">
+      <button class="navbtn prev" type="button" aria-label="Mes anterior">←</button>
+      <h2 class="month-label"></h2>
+      <button class="navbtn next" type="button" aria-label="Mes siguiente">→</button>
+    </div>
+    <div class="months"></div>
   </main>
 
   <script>
-    // Re-run on every view-transition navigation, not just the first load.
-    document.addEventListener("astro:page-load", () => {
-    const sections = Array.from(document.querySelectorAll<HTMLElement>(".month"));
-    const label = document.querySelector<HTMLElement>(".month-label");
-    const prev = document.querySelector<HTMLButtonElement>(".navbtn.prev");
-    const next = document.querySelector<HTMLButtonElement>(".navbtn.next");
-    const today = document.querySelector<HTMLElement>(".cal")?.dataset.today ?? "";
+    import {
+      buildMonths,
+      typeKey,
+      fmtEventDate,
+      WEEKDAYS,
+      type CalEvent,
+      type DayCell,
+      type MonthGrid,
+    } from "../lib/calendar";
+    import { fetchEvents } from "../lib/events";
 
-    // Show only the chosen day's detail in each month; default to today if it
-    // has events, otherwise the month's first event day.
-    const selectDate = (section: HTMLElement, date: string) => {
+    // Legend colour key, in display order.
+    const KNOWN = [
+      { key: "liga", label: "Liga" },
+      { key: "champions", label: "Champions" },
+      { key: "mundial", label: "Mundial" },
+      { key: "copa", label: "Copa" },
+      { key: "amistoso", label: "Amistoso" },
+      { key: "otro", label: "Otro" },
+    ];
+
+    type Attrs = Record<string, string | number | boolean | undefined>;
+
+    // Tiny DOM builder. `text` sets textContent; boolean `true` sets a bare attr.
+    function el(tag: string, attrs: Attrs = {}, children: (Node | string)[] = []): HTMLElement {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (v === undefined || v === false) continue;
+        if (k === "text") node.textContent = String(v);
+        else if (k === "class") node.className = String(v);
+        else if (v === true) node.setAttribute(k, "");
+        else node.setAttribute(k, String(v));
+      }
+      for (const c of children) node.append(c);
+      return node;
+    }
+
+    const pad2 = (n: number) => String(n).padStart(2, "0");
+
+    // The reader's local "today", so the highlight is correct wherever they are.
+    function todayISO(): string {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    }
+
+    function renderCell(cell: DayCell, today: string): HTMLElement {
+      const has = cell.events.length > 0;
+      const cls = ["cell"];
+      if (cell.day === null) cls.push("empty");
+      if (has) cls.push("has");
+      if (cell.iso && cell.iso === today) cls.push("today");
+
+      const div = el("div", {
+        class: cls.join(" "),
+        "data-date": has ? cell.iso : undefined,
+        tabindex: has ? 0 : undefined,
+        title: has ? "Ver detalle" : undefined,
+      });
+      if (cell.day !== null) {
+        div.append(el("span", { class: "n", text: cell.day }));
+        if (has) {
+          const dots = el("span", { class: "dots" });
+          for (const ev of cell.events) {
+            dots.append(el("span", { class: `dot ${typeKey(ev.type)}`, title: ev.title || ev.type }));
+          }
+          div.append(dots);
+        }
+      }
+      return div;
+    }
+
+    function renderMonth(m: MonthGrid, today: string): HTMLElement {
+      const section = el("section", { class: "month", "data-label": m.label });
+
+      const grid = el("div", { class: "grid", "aria-label": m.label });
+      const weekdays = el("div", { class: "weekdays" });
+      for (const d of WEEKDAYS) weekdays.append(el("span", { text: d }));
+      grid.append(weekdays);
+
+      const days = el("div", { class: "days" });
+      for (const cell of m.weeks.flat()) days.append(renderCell(cell, today));
+      grid.append(days);
+      section.append(grid);
+
+      if (m.events.length === 0) {
+        section.append(el("p", { class: "noev", text: "Sin eventos previstos este mes." }));
+        return section;
+      }
+
+      const agenda = el("ul", { class: "agenda" });
+      for (const ev of m.events) {
+        const li = el("li", { class: "ev", "data-date": ev.date });
+        li.append(el("span", { class: `rail ${typeKey(ev.type)}`, "aria-hidden": "true" }));
+
+        const when = el("span", { class: "when" });
+        when.append(el("span", { class: "d", text: fmtEventDate(ev.date) }));
+        if (ev.time) when.append(el("span", { class: "t", text: ev.time }));
+        li.append(when);
+
+        const what = el("span", { class: "what" });
+        what.append(el("span", { class: "title", text: ev.title || ev.type || "Evento" }));
+        if (ev.location || ev.type) {
+          const sub = `${ev.location}${ev.location && ev.type ? " · " : ""}${ev.type}`;
+          what.append(el("span", { class: "sub2", text: sub }));
+        }
+        li.append(what);
+        agenda.append(li);
+      }
+      section.append(agenda);
+      return section;
+    }
+
+    // Pick the month containing today, else the next upcoming, else the last.
+    function pickStart(months: MonthGrid[], today: string): number {
+      const key = (m: MonthGrid) => `${m.year}-${pad2(m.month)}`;
+      const tm = today.slice(0, 7);
+      let i = months.findIndex((m) => key(m) === tm);
+      if (i === -1) i = months.findIndex((m) => key(m) > tm);
+      if (i === -1) i = months.length - 1;
+      return i;
+    }
+
+    function renderLegend(legend: HTMLElement, events: CalEvent[]) {
+      const present = new Set(events.map((e) => typeKey(e.type)));
+      legend.replaceChildren(
+        ...KNOWN.filter((k) => present.has(k.key)).map((l) =>
+          el("li", {}, [el("span", { class: `dot ${l.key}`, "aria-hidden": "true" }), l.label]),
+        ),
+      );
+    }
+
+    // Show only the chosen day's detail in a month; default to today if it has
+    // events, otherwise the month's first event day.
+    function selectDate(section: HTMLElement, date: string) {
       const agenda = section.querySelector<HTMLElement>(".agenda");
       if (!agenda) return;
       agenda.classList.add("filtered");
@@ -160,44 +179,93 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
       section.querySelectorAll<HTMLElement>(".cell").forEach((cell) =>
         cell.classList.toggle("selected", !!date && cell.dataset.date === date),
       );
-    };
-    const defaultDate = (section: HTMLElement) => {
+    }
+    function defaultDate(section: HTMLElement, today: string): string {
       const dates = Array.from(section.querySelectorAll<HTMLElement>(".ev"))
         .map((ev) => ev.dataset.date ?? "")
         .sort();
       return dates.includes(today) ? today : (dates[0] ?? "");
-    };
-
-    // Month navigation (prev/next).
-    if (sections.length && label && prev && next) {
-      let i = Math.max(0, sections.findIndex((s) => !s.hidden));
-      const show = (n: number) => {
-        i = Math.max(0, Math.min(sections.length - 1, n));
-        sections.forEach((s, k) => (s.hidden = k !== i));
-        label.textContent = sections[i].dataset.label ?? "";
-        prev.disabled = i === 0;
-        next.disabled = i === sections.length - 1;
-      };
-      prev.addEventListener("click", () => show(i - 1));
-      next.addEventListener("click", () => show(i + 1));
-      show(i);
     }
 
-    // Day selection within every month.
-    sections.forEach((section) => {
-      selectDate(section, defaultDate(section));
-      section.querySelectorAll<HTMLElement>(".cell.has").forEach((cell) => {
-        const pick = () => selectDate(section, cell.dataset.date ?? "");
-        cell.addEventListener("click", pick);
-        cell.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            pick();
-          }
+    // Wire month navigation (prev/next) and per-day selection onto fresh DOM.
+    function wire(main: HTMLElement, sections: HTMLElement[], today: string, start: number) {
+      const label = main.querySelector<HTMLElement>(".month-label");
+      const prev = main.querySelector<HTMLButtonElement>(".navbtn.prev");
+      const next = main.querySelector<HTMLButtonElement>(".navbtn.next");
+
+      if (label && prev && next) {
+        let i = start;
+        const show = (n: number) => {
+          i = Math.max(0, Math.min(sections.length - 1, n));
+          sections.forEach((s, k) => (s.hidden = k !== i));
+          label.textContent = sections[i].dataset.label ?? "";
+          prev.disabled = i === 0;
+          next.disabled = i === sections.length - 1;
+        };
+        prev.addEventListener("click", () => show(i - 1));
+        next.addEventListener("click", () => show(i + 1));
+        show(i);
+      }
+
+      sections.forEach((section) => {
+        selectDate(section, defaultDate(section, today));
+        section.querySelectorAll<HTMLElement>(".cell.has").forEach((cell) => {
+          const pick = () => selectDate(section, cell.dataset.date ?? "");
+          cell.addEventListener("click", pick);
+          cell.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              pick();
+            }
+          });
         });
       });
-    });
-    });
+    }
+
+    let controller: AbortController | null = null;
+
+    async function load(main: HTMLElement) {
+      controller?.abort();
+      controller = new AbortController();
+      const monthsBox = main.querySelector<HTMLElement>(".months");
+      const legend = main.querySelector<HTMLElement>(".legend");
+      if (!monthsBox || !legend) return;
+
+      main.dataset.state = "loading";
+      try {
+        const events = await fetchEvents(controller.signal);
+        if (events.length === 0) {
+          monthsBox.replaceChildren();
+          legend.replaceChildren();
+          main.dataset.state = "empty";
+          return;
+        }
+
+        const today = todayISO();
+        const months = buildMonths(events);
+        const start = pickStart(months, today);
+
+        renderLegend(legend, events);
+        const sections = months.map((m) => renderMonth(m, today));
+        sections.forEach((s, k) => (s.hidden = k !== start));
+        monthsBox.replaceChildren(...sections);
+        wire(main, sections, today, start);
+
+        main.dataset.state = "ready";
+      } catch (err) {
+        if ((err as Error)?.name === "AbortError") return;
+        main.dataset.state = "error";
+      }
+    }
+
+    // Re-run on every view-transition navigation, not just the first load.
+    function init() {
+      const main = document.querySelector<HTMLElement>(".cal");
+      if (!main) return;
+      main.querySelector<HTMLButtonElement>(".retry")?.addEventListener("click", () => load(main));
+      load(main);
+    }
+    document.addEventListener("astro:page-load", init);
   </script>
 
   <Footer />
@@ -209,6 +277,36 @@ const legend = KNOWN.filter((k) => presentKeys.has(k.key));
     margin: 24px auto 8px;
     padding: 0 20px;
   }
+
+  /* ── Load states (loading / error / empty) ── */
+  .status {
+    display: none;
+    text-align: center;
+    color: var(--tinta);
+    margin: 40px auto;
+    max-width: 40ch;
+    line-height: 1.6;
+  }
+  .status .retry {
+    margin-left: 6px;
+    border: 1px solid var(--navy);
+    background: transparent;
+    color: var(--navy);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .status .retry:hover { background: var(--navy); color: var(--crema); }
+
+  .cal[data-state="loading"] .status.loading,
+  .cal[data-state="error"] .status.error,
+  .cal[data-state="empty"] .status.empty { display: block; }
+
+  /* Legend, month nav and grids only appear once the live fetch resolves. */
+  .cal:not([data-state="ready"]) .legend,
+  .cal:not([data-state="ready"]) .cal-nav,
+  .cal:not([data-state="ready"]) .months { display: none; }
 
   /* ── "Future only" notice ── */
   .notice {

@@ -1,5 +1,5 @@
-// Calendar logic — parse the events CSV and shape it into month grids.
-// Data lives in src/data/calendario.csv (date,time,title,location,type).
+// Calendar logic — shape a list of events into Monday-first month grids.
+// Events come from the libero API at runtime (see src/lib/events.ts).
 
 export interface CalEvent {
   date: string; // YYYY-MM-DD
@@ -42,46 +42,6 @@ export function typeKey(type: string): string {
   if (t.includes("copa")) return "copa";
   if (t.includes("amistoso") || t.includes("pretemporada")) return "amistoso";
   return "otro";
-}
-
-// Splits one CSV line into fields, honouring double-quoted values that
-// may contain commas. Doubled quotes ("") become a literal quote.
-function splitCsvLine(line: string): string[] {
-  const out: string[] = [];
-  let field = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (line[i + 1] === '"') { field += '"'; i++; }
-        else inQuotes = false;
-      } else field += c;
-    } else if (c === '"') {
-      inQuotes = true;
-    } else if (c === ",") {
-      out.push(field);
-      field = "";
-    } else field += c;
-  }
-  out.push(field);
-  return out.map((f) => f.trim());
-}
-
-// Parses the CSV text into events. Skips blank lines, "#" comments, and the
-// header row. Rows without a valid YYYY-MM-DD date are dropped.
-export function parseEvents(csv: string): CalEvent[] {
-  const events: CalEvent[] = [];
-  for (const raw of csv.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line || line.startsWith("#")) continue;
-    const [date = "", time = "", title = "", location = "", type = ""] = splitCsvLine(raw);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue; // also skips the header row
-    events.push({ date, time, title, location, type });
-  }
-  return events.sort((a, b) =>
-    a.date === b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date),
-  );
 }
 
 const pad2 = (n: number) => String(n).padStart(2, "0");

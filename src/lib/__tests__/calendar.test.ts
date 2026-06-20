@@ -1,36 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { parseEvents, buildMonths, typeKey, fmtEventDate } from "../calendar";
+import { buildMonths, typeKey, fmtEventDate, type CalEvent } from "../calendar";
 
-describe("parseEvents", () => {
-  it("skips comments, blanks, and the header row", () => {
-    const csv = [
-      "# a comment",
-      "",
-      "date,time,title,location,type",
-      "2026-08-16,21:00,Atleti vs Rival,Metropolitano,Liga",
-    ].join("\n");
-    expect(parseEvents(csv)).toEqual([
-      { date: "2026-08-16", time: "21:00", title: "Atleti vs Rival", location: "Metropolitano", type: "Liga" },
-    ]);
-  });
-
-  it("honours quoted fields containing commas", () => {
-    const csv = 'date,time,title,location,type\n2026-09-01,,"Atleti vs Sevilla, jornada 1",Casa,Liga';
-    expect(parseEvents(csv)[0].title).toBe("Atleti vs Sevilla, jornada 1");
-  });
-
-  it("sorts by date then time", () => {
-    const csv = [
-      "2026-09-01,20:00,B,,Liga",
-      "2026-08-16,21:00,A,,Liga",
-      "2026-08-16,18:00,Z,,Copa",
-    ].join("\n");
-    expect(parseEvents(csv).map((e) => e.title)).toEqual(["Z", "A", "B"]);
-  });
-
-  it("drops rows without a valid date", () => {
-    expect(parseEvents("not-a-date,,x,,Liga\n2026/08/16,,y,,Liga")).toEqual([]);
-  });
+// Build a CalEvent from a compact tuple, so the grid tests read like the old
+// CSV rows without depending on a parser.
+const ev = (date: string, time = "", title = "", location = "", type = "Liga"): CalEvent => ({
+  date,
+  time,
+  title,
+  location,
+  type,
 });
 
 describe("typeKey", () => {
@@ -48,7 +26,7 @@ describe("typeKey", () => {
 describe("buildMonths", () => {
   it("groups by month with Monday-first padding", () => {
     // 2026-08-01 is a Saturday -> 5 leading pad cells (Mon..Fri).
-    const months = buildMonths(parseEvents("2026-08-16,21:00,A,,Liga"));
+    const months = buildMonths([ev("2026-08-16", "21:00", "A")]);
     expect(months).toHaveLength(1);
     const m = months[0];
     expect(m.label).toBe("agosto 2026");
@@ -60,8 +38,8 @@ describe("buildMonths", () => {
   });
 
   it("fills every month between the first and last event, inclusive", () => {
-    const csv = "2026-12-01,,A,,Liga\n2026-08-16,,B,,Liga";
-    expect(buildMonths(parseEvents(csv)).map((m) => m.label)).toEqual([
+    const events = [ev("2026-12-01", "", "A"), ev("2026-08-16", "", "B")];
+    expect(buildMonths(events).map((m) => m.label)).toEqual([
       "agosto 2026",
       "septiembre 2026",
       "octubre 2026",
@@ -71,8 +49,8 @@ describe("buildMonths", () => {
   });
 
   it("spans across a year boundary", () => {
-    const csv = "2026-11-10,,A,,Liga\n2027-02-02,,B,,Liga";
-    expect(buildMonths(parseEvents(csv)).map((m) => m.label)).toEqual([
+    const events = [ev("2026-11-10", "", "A"), ev("2027-02-02", "", "B")];
+    expect(buildMonths(events).map((m) => m.label)).toEqual([
       "noviembre 2026",
       "diciembre 2026",
       "enero 2027",
