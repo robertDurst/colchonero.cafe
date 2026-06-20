@@ -1,0 +1,29 @@
+src/lib/events.ts
+  s_b6ce5285ea7d33::t_9f9dfe98b8b0d9 1-36
+src/lib/calendar.ts
+  s_b6ce5285ea7d33::t_04f0d75558d282 1-2
+src/pages/calendario.astro
+  s_b6ce5285ea7d33::t_b21c002d6d190a 281-310
+  s_b6ce5285ea7d33::t_ca595d9f6fe8fe 2-3
+  s_b6ce5285ea7d33::t_843861695ba99c 20-35,39-172,182-183,190-220,223-268
+src/lib/__tests__/calendar.test.ts
+  s_b6ce5285ea7d33::t_e2e31ba8b98dee 2,4-11,29,41-42,52-53
+src/lib/__tests__/events.test.ts
+  s_b6ce5285ea7d33::t_8d6b846c84fa49 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "964f78eca9aba6b70524f7a411cad6f1b4bf20a0",
+  "prompts": {},
+  "sessions": {
+    "s_b6ce5285ea7d33": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "804e4a33-89ed-45a8-b23a-bc0b660e906d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "robertDurst <me@robdurst.com>"
+    }
+  }
+}
