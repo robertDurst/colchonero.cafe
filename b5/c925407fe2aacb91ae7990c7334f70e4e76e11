@@ -1,0 +1,19 @@
+src/pages/calendario.astro
+  s_b6ce5285ea7d33::t_dd64a4f95d9eee 274-280,288,296,306,318,331,338,345-350,353,360,369,386,390,396,401,407-408,413,417,420,428,434,436,440,445,448,451,455,459,463,466,476,486,491,498,501-503,505,512,518-524,530,536,541,547,552,560-561
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.9",
+  "base_commit_sha": "b5c925407fe2aacb91ae7990c7334f70e4e76e11",
+  "prompts": {},
+  "sessions": {
+    "s_b6ce5285ea7d33": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "804e4a33-89ed-45a8-b23a-bc0b660e906d",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "robertDurst <me@robdurst.com>"
+    }
+  }
+}
