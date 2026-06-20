@@ -271,7 +271,13 @@ import Footer from "@/components/Footer.astro";
   <Footer />
 </Layout>
 
-<style>
+<!--
+  The calendar grid is built at runtime by the page script (createElement),
+  so its nodes don't carry Astro's scoped-style attribute. These styles are
+  therefore is:global, namespaced under .cal (which only exists on this page)
+  so generic class names like .cell/.dot/.title don't leak to other pages.
+-->
+<style is:global>
   .cal {
     max-width: 680px;
     margin: 24px auto 8px;
@@ -279,7 +285,7 @@ import Footer from "@/components/Footer.astro";
   }
 
   /* ── Load states (loading / error / empty) ── */
-  .status {
+  .cal .status {
     display: none;
     text-align: center;
     color: var(--tinta);
@@ -287,7 +293,7 @@ import Footer from "@/components/Footer.astro";
     max-width: 40ch;
     line-height: 1.6;
   }
-  .status .retry {
+  .cal .status .retry {
     margin-left: 6px;
     border: 1px solid var(--navy);
     background: transparent;
@@ -297,7 +303,7 @@ import Footer from "@/components/Footer.astro";
     font: inherit;
     cursor: pointer;
   }
-  .status .retry:hover { background: var(--navy); color: var(--crema); }
+  .cal .status .retry:hover { background: var(--navy); color: var(--crema); }
 
   .cal[data-state="loading"] .status.loading,
   .cal[data-state="error"] .status.error,
@@ -308,24 +314,8 @@ import Footer from "@/components/Footer.astro";
   .cal:not([data-state="ready"]) .cal-nav,
   .cal:not([data-state="ready"]) .months { display: none; }
 
-  /* ── "Future only" notice ── */
-  .notice {
-    max-width: 52ch;
-    margin: 0 auto 22px;
-    padding: 12px 16px;
-    border-left: 5px solid var(--rojo);
-    background: rgba(206, 53, 36, 0.07);
-    border-radius: 0 8px 8px 0;
-    font-size: 0.92rem;
-    line-height: 1.55;
-    color: var(--tinta);
-  }
-  .notice strong {
-    color: var(--rojo);
-  }
-
   /* ── Legend ── */
-  .legend {
+  .cal .legend {
     list-style: none;
     display: flex;
     flex-wrap: wrap;
@@ -338,51 +328,36 @@ import Footer from "@/components/Footer.astro";
     letter-spacing: 0.05em;
     color: var(--tinta);
   }
-  .legend li {
+  .cal .legend li {
     display: flex;
     align-items: center;
     gap: 7px;
   }
 
   /* ── Type colour dots ── */
-  .dot {
+  .cal .dot {
     width: 9px;
     height: 9px;
     border-radius: 50%;
     background: var(--tinta);
     flex: 0 0 auto;
   }
-  .dot.liga { background: var(--rojo); }
-  .dot.champions { background: var(--navy); }
-  .dot.mundial { background: #0e8388; }
-  .dot.copa { background: #d4a017; }
-  .dot.amistoso { background: #2e7d4f; }
-  .dot.otro { background: #7a6a55; }
-
-  .empty {
-    text-align: center;
-    color: var(--tinta);
-    margin: 40px auto;
-    max-width: 40ch;
-    line-height: 1.6;
-  }
-  .empty code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.9em;
-    background: rgba(11, 27, 63, 0.07);
-    padding: 1px 5px;
-    border-radius: 4px;
-  }
+  .cal .dot.liga { background: var(--rojo); }
+  .cal .dot.champions { background: var(--navy); }
+  .cal .dot.mundial { background: #0e8388; }
+  .cal .dot.copa { background: #d4a017; }
+  .cal .dot.amistoso { background: #2e7d4f; }
+  .cal .dot.otro { background: #7a6a55; }
 
   /* ── Month navigation ── */
-  .cal-nav {
+  .cal .cal-nav {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 14px;
     margin: 0 0 18px;
   }
-  .cal-nav .month-label {
+  .cal .cal-nav .month-label {
     margin: 0;
     min-width: 9.5em;
     text-align: center;
@@ -391,7 +366,7 @@ import Footer from "@/components/Footer.astro";
     font-size: 1.5rem;
     color: var(--navy);
   }
-  .navbtn {
+  .cal .navbtn {
     width: 40px;
     height: 40px;
     flex: 0 0 auto;
@@ -408,41 +383,41 @@ import Footer from "@/components/Footer.astro";
     justify-content: center;
     transition: background 0.15s, color 0.15s, opacity 0.15s;
   }
-  .navbtn:hover:not(:disabled) {
+  .cal .navbtn:hover:not(:disabled) {
     background: var(--navy);
     color: var(--crema);
   }
-  .navbtn:disabled {
+  .cal .navbtn:disabled {
     opacity: 0.3;
     cursor: default;
   }
 
   /* ── Month ── */
-  .month {
+  .cal .month {
     margin: 0 0 40px;
   }
 
   /* ── Grid ── */
-  .grid {
+  .cal .grid {
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 16px rgba(11, 27, 63, 0.1);
   }
-  .weekdays,
-  .days {
+  .cal .weekdays,
+  .cal .days {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
   }
   /* Fixed, equal row heights — keeps padding-cell rows the same as day rows. */
-  .days {
+  .cal .days {
     grid-auto-rows: 46px;
     align-content: start;
   }
-  .weekdays {
+  .cal .weekdays {
     background: var(--navy);
   }
-  .weekdays span {
+  .cal .weekdays span {
     text-align: center;
     padding: 8px 0;
     color: var(--crema);
@@ -450,45 +425,45 @@ import Footer from "@/components/Footer.astro";
     font-size: 0.72rem;
     letter-spacing: 0.05em;
   }
-  .cell {
+  .cal .cell {
     position: relative;
     padding: 5px 6px;
     border-top: 1px solid rgba(11, 27, 63, 0.08);
     border-left: 1px solid rgba(11, 27, 63, 0.08);
   }
-  .cell:nth-child(7n + 1) { border-left: none; }
+  .cal .cell:nth-child(7n + 1) { border-left: none; }
   /* Padding cells (days outside this month) stay blank so they recede. */
-  .cell.empty {
+  .cal .cell.empty {
     background: transparent;
     border-color: transparent;
   }
-  .cell .n {
+  .cal .cell .n {
     font-size: 0.82rem;
     font-variant-numeric: tabular-nums;
     color: var(--tinta);
   }
-  .cell.has {
+  .cal .cell.has {
     cursor: pointer;
   }
-  .cell.has:hover {
+  .cal .cell.has:hover {
     background: rgba(206, 53, 36, 0.06);
   }
-  .cell.has:focus-visible {
+  .cal .cell.has:focus-visible {
     outline: 2px solid var(--rojo);
     outline-offset: -2px;
   }
-  .cell.has .n {
+  .cal .cell.has .n {
     font-weight: 700;
     color: var(--navy);
   }
-  .cell.selected {
+  .cal .cell.selected {
     background: rgba(11, 27, 63, 0.1);
     box-shadow: inset 0 0 0 2px var(--navy);
   }
-  .cell.today {
+  .cal .cell.today {
     background: rgba(206, 53, 36, 0.08);
   }
-  .cell.today .n {
+  .cal .cell.today .n {
     background: var(--rojo);
     color: #fff;
     border-radius: 50%;
@@ -498,7 +473,7 @@ import Footer from "@/components/Footer.astro";
     align-items: center;
     justify-content: center;
   }
-  .cell .dots {
+  .cal .cell .dots {
     position: absolute;
     left: 6px;
     bottom: 6px;
@@ -508,73 +483,73 @@ import Footer from "@/components/Footer.astro";
   }
 
   /* ── Selected-day detail under the grid ── */
-  .agenda {
+  .cal .agenda {
     list-style: none;
     margin: 14px 0 0;
     padding: 0;
   }
-  .ev {
+  .cal .ev {
     display: flex;
     align-items: stretch;
     gap: 12px;
     padding: 10px 4px;
     border-bottom: 1px dashed rgba(11, 27, 63, 0.22);
   }
-  .ev:last-child { border-bottom: none; }
+  .cal .ev:last-child { border-bottom: none; }
 
   /* Once JS is active, only the selected day's events are shown. */
-  .agenda.filtered .ev { display: none; }
-  .agenda.filtered .ev.sel { display: flex; }
-  .agenda.filtered .ev.sel { border-bottom: none; }
+  .cal .agenda.filtered .ev { display: none; }
+  .cal .agenda.filtered .ev.sel { display: flex; }
+  .cal .agenda.filtered .ev.sel { border-bottom: none; }
 
-  .noev {
+  .cal .noev {
     text-align: center;
     color: var(--tinta);
     opacity: 0.7;
     margin: 18px 0 0;
     font-size: 0.95rem;
   }
-  .ev .rail {
+  .cal .ev .rail {
     width: 4px;
     border-radius: 4px;
     background: var(--tinta);
     flex: 0 0 auto;
   }
-  .ev .rail.liga { background: var(--rojo); }
-  .ev .rail.champions { background: var(--navy); }
-  .ev .rail.mundial { background: #0e8388; }
-  .ev .rail.copa { background: #d4a017; }
-  .ev .rail.amistoso { background: #2e7d4f; }
-  .ev .rail.otro { background: #7a6a55; }
-  .ev .when {
+  .cal .ev .rail.liga { background: var(--rojo); }
+  .cal .ev .rail.champions { background: var(--navy); }
+  .cal .ev .rail.mundial { background: #0e8388; }
+  .cal .ev .rail.copa { background: #d4a017; }
+  .cal .ev .rail.amistoso { background: #2e7d4f; }
+  .cal .ev .rail.otro { background: #7a6a55; }
+  .cal .ev .when {
     flex: 0 0 6.5em;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
-  .ev .when .d {
+  .cal .ev .when .d {
     font-weight: 700;
     font-size: 0.9rem;
     text-transform: capitalize;
     color: var(--navy);
   }
-  .ev .when .t {
+  .cal .ev .when .t {
     font-size: 0.78rem;
     color: var(--tinta);
     font-variant-numeric: tabular-nums;
   }
-  .ev .what {
+  .cal .ev .what {
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-width: 0;
   }
-  .ev .what .title {
+  .cal .ev .what .title {
     font-weight: 700;
     font-size: 1.02rem;
     line-height: 1.2;
   }
-  .ev .what .sub2 {
+  .cal .ev .what .sub2 {
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -582,7 +557,7 @@ import Footer from "@/components/Footer.astro";
   }
 
   @media (max-width: 560px) {
-    .days { grid-auto-rows: 40px; }
-    .cell .n { font-size: 0.78rem; }
+    .cal .days { grid-auto-rows: 40px; }
+    .cal .cell .n { font-size: 0.78rem; }
   }
 </style>
