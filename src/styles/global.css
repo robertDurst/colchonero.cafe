@@ -35,6 +35,10 @@ a {
   vertical-align: middle;
   flex: 0 0 auto;
 }
+.res-icon {
+  vertical-align: middle;
+  flex: 0 0 auto;
+}
 
 /* ---------- Home (landing) ---------- */
 body.home {

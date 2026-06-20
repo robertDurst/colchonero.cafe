@@ -2,18 +2,46 @@
 import Layout from "@/layouts/Layout.astro";
 import Tabs from "@/components/Tabs.astro";
 import Footer from "@/components/Footer.astro";
+import ResourceIcon from "@/components/ResourceIcon.astro";
 
-// Links out to other Atleti sites. (label, url, note)
+// Links out to other Atleti sites. (label, url, note, kind)
+// kind: "oficial" | "noticias" | "comunidad"
 const RESOURCES = [
   {
     label: "Atlético de Madrid",
     url: "https://www.atleticodemadrid.com",
     note: "Web oficial del club",
+    kind: "oficial",
+  },
+  {
+    label: "LALIGA",
+    url: "https://www.laliga.com",
+    note: "Web oficial de la liga",
+    kind: "oficial",
+  },
+  {
+    label: "UEFA",
+    url: "https://www.uefa.com",
+    note: "Web oficial del fútbol europeo",
+    kind: "oficial",
+  },
+  {
+    label: "Copa del Rey",
+    url: "https://rfef.es/es/copa-del-rey",
+    note: "Web oficial de la RFEF",
+    kind: "oficial",
   },
   {
     label: "r/atletico",
     url: "https://www.reddit.com/r/atletico/",
     note: "Subreddit oficial",
+    kind: "comunidad",
+  },
+  {
+    label: "La Media Colchonera",
+    url: "https://lamediacolchonera.com",
+    note: "Noticias y opinión rojiblanca",
+    kind: "noticias",
   },
 ];
 ---
@@ -31,6 +59,7 @@ const RESOURCES = [
   <main class="menu">
     {RESOURCES.map((r) => (
       <a class="row" href={r.url} target="_blank" rel="noopener">
+        <ResourceIcon kind={r.kind} />
         <span class="title">{r.label}</span>
         <span class="drink">{r.note}</span>
         <span class="price">↗</span>

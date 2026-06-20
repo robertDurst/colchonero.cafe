@@ -1,0 +1,48 @@
+---
+// Small line glyph marking the kind of resource. Matches the home-menu icons:
+// monochrome, currentColor stroke, no fill.
+// kind: "oficial" (insignia verificada) | "noticias" (periódico) | "comunidad" (foro)
+interface Props {
+  kind: "oficial" | "noticias" | "comunidad";
+  px?: number;
+}
+const { kind, px = 24 } = Astro.props;
+const labels = {
+  oficial: "Sitio oficial",
+  noticias: "Web de afición / noticias",
+  comunidad: "Comunidad / foro",
+};
+---
+<svg
+  class="res-icon"
+  width={px}
+  height={px}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  role="img"
+  aria-label={labels[kind]}
+>
+  {kind === "oficial" && (
+    <g>
+      <path d="M12 2.5 19 5.2V11c0 4.8-3.2 7.6-7 9-3.8-1.4-7-4.2-7-9V5.2z" />
+      <path d="M9 11.6l2.2 2.2L15.2 9.8" />
+    </g>
+  )}
+  {kind === "noticias" && (
+    <g>
+      <path d="M4 5.5h12.5v13H6a2 2 0 0 1-2-2z" />
+      <path d="M16.5 9H19a1 1 0 0 1 1 1v6.5a2 2 0 0 1-2 2" />
+      <path d="M6.5 8.5h7.5M6.5 11.5h7.5M6.5 14.5h5" />
+    </g>
+  )}
+  {kind === "comunidad" && (
+    <g>
+      <path d="M3 5.5h11a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5H8l-3.5 3v-3H4a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 3 5.5z" />
+      <path d="M16 9h3.5a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5H19v2.5L16 16h-3" />
+    </g>
+  )}
+</svg>
