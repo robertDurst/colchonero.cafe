@@ -1,0 +1,71 @@
+---
+// Minimal connection indicator: green when api.colchonero.cafe/status returns 200/ok, red otherwise.
+const STATUS_URL = "https://api.colchonero.cafe/status";
+const INTERVAL_MS = 60000; // poll every 60s
+---
+<span id="conn-status" title="Comprobando conexión…" aria-label="Estado de conexión" transition:persist>
+  <span class="dot"></span>
+  <span class="label">API</span>
+</span>
+
+<style>
+  #conn-status {
+    position: fixed;
+    bottom: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 4px 9px;
+    background: rgba(243, 233, 216, 0.9); /* --crema, translucent */
+    border: 1px solid rgba(11, 27, 63, 0.18);
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(11, 27, 63, 0.12);
+    z-index: 50;
+  }
+  #conn-status .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(11, 27, 63, 0.35); /* unknown / checking */
+    transition: background-color 0.3s ease;
+  }
+  #conn-status .label {
+    font-size: 0.7rem;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    opacity: 0.65;
+  }
+  #conn-status.ok .dot { background: #3a7d44; }
+  #conn-status.down .dot { background: var(--rojo); }
+  @media (max-width: 560px) {
+    #conn-status { bottom: 10px; right: 10px; transform: scale(0.92); }
+  }
+</style>
+
+<script is:inline define:vars={{ STATUS_URL, INTERVAL_MS }}>
+  async function checkConn() {
+    const el = document.getElementById("conn-status");
+    if (!el) return;
+    let ok = false;
+    try {
+      const res = await fetch(STATUS_URL, { cache: "no-store" });
+      ok = res.ok && res.status === 200;
+    } catch {
+      ok = false;
+    }
+    el.classList.toggle("ok", ok);
+    el.classList.toggle("down", !ok);
+    el.title = ok ? "Conectado" : "Sin conexión";
+  }
+
+  // Run once: guard against duplicate intervals across view transitions.
+  if (!window.__connStatusStarted) {
+    window.__connStatusStarted = true;
+    checkConn();
+    setInterval(checkConn, INTERVAL_MS);
+    document.addEventListener("astro:page-load", checkConn);
+  }
+</script>
