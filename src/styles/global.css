@@ -391,6 +391,52 @@ article table a:hover {
   text-decoration: underline;
 }
 
+/* ---------- Post images ---------- */
+figure.post-image {
+  margin: 1.6em 0;
+}
+figure.post-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(11, 27, 63, 0.15);
+}
+figure.post-image figcaption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--tinta);
+  margin-top: 0.5em;
+  font-style: italic;
+}
+
+/* ---------- Tactic diagrams ---------- */
+figure.tactic-diagram {
+  margin: 1.8em 0;
+  display: block;
+}
+figure.tactic-diagram svg {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+figure.tactic-diagram figcaption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--tinta);
+  margin-top: 0.5em;
+  font-style: italic;
+}
+.tactic-error {
+  padding: 8px 12px;
+  background: rgba(206,53,36,0.1);
+  border-left: 4px solid var(--rojo);
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  color: var(--rojo);
+}
+
 /* draining glass — empties as you read */
 .drainer {
   position: fixed;
