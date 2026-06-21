@@ -6,8 +6,9 @@ type AnyNode = any;
 
 export function remarkTactic() {
   return (tree: AnyNode) => {
-    visit(tree, 'code', (node: AnyNode, index: number, parent: AnyNode) => {
+    visit(tree, 'code', (node: AnyNode, index: number | undefined, parent: AnyNode) => {
       if (node.lang !== 'tactic') return;
+      if (index == null || !parent) return;
       const svg = renderTactic(node.value as string);
       const note = extractNote(node.value as string);
       const caption = note ? `<figcaption>${escHtml(note)}</figcaption>` : '';
