@@ -64,16 +64,16 @@ Williams jugó en el Athletic Club de Bilbao y Merino jugó en el Arsenal. No m�
 
 Y en este punto, ya miraba con menos atención.
 
-Los stats finales por Baena:
+Las estadísticas finales de Baena:
 
-| Categoria                     | Value |
-| ----------------------------- | ----- |
-| xG                            | 0.05  |
-| xA                            | 0.23  |
-| Minutos                       | 61    |
-| Goles                         | 0     |
-| Asistencias                   | 0     |
-| Asistencias por en mi opinión | 2     |
+| Categoría                       | Valor |
+| ------------------------------- | ----- |
+| xG                              | 0.05  |
+| xA                              | 0.23  |
+| Minutos                         | 61    |
+| Goles                           | 0     |
+| Asistencias                     | 0     |
+| Asistencias (según mi opinión)  | 2     |
 
 ## La Selección Española
 
