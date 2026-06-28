@@ -1,6 +1,6 @@
 ---
 title: "Grimaldo"
-date: 2026-06-26
+date: 2026-06-25
 ---
 
 Ayer Atleti anunció la firma de Grimaldo con el club. Firma un contrato de tres años con opción a uno más por $23,000,000 incluyendo bonuses. No sé cómo jugará en el sistema táctico, pero es un buen lateral izquierdo.

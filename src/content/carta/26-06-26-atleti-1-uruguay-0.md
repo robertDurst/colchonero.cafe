@@ -1,6 +1,6 @@
 ---
 title: "Atleti 1 Uruguay 0"
-date: 2026-06-27
+date: 2026-06-26
 ---
 
 <figure>
