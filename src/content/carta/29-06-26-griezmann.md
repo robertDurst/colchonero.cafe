@@ -1,0 +1,4 @@
+---
+title: "Griezmann"
+date: 2026-06-29
+---
